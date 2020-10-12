@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.log4j.BasicConfigurator;
+
 /**
  * Azure Functions with HTTP Trigger.
  */
@@ -42,6 +44,7 @@ public class ControladorQuasar {
             final ExecutionContext context) {
         context.getLogger().info("Se recibe peticion para ubicacion de los satellites");
 
+        BasicConfigurator.configure();
         // Parse query parameter
         final String query = request.getQueryParameters().get("name");
         final String satelliteString = request.getBody().orElse(query);

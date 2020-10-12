@@ -1,6 +1,7 @@
 package com.jdmm.quasar.logica;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jdmm.quasar.dto.ResultadoUbicacion;
 import com.jdmm.quasar.dto.SatellitesIn;
@@ -18,21 +21,24 @@ import com.lemmingapex.trilateration.TrilaterationFunction;
 
 public class LogicaQuasar {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(LogicaQuasar.class);
+	
 	public ResultadoUbicacion iniciarProcesoUbicacion(SatellitesIn satellites) throws ExcepcionQasar {
 		ResultadoUbicacion resultado = new ResultadoUbicacion();
 		resultado.setExitoso(false);
 		List<LinkedHashMap<Integer,String>> listaMensajes = new ArrayList<>();
-		double[] listaDistancias = new double[3];
+		//double[] listaDistancias = new double[3];
+		HashMap<String,Double> listaDistancias = new HashMap<String,Double>();
 		if(satellites.getSatellites().size()>3) {
 			return resultado;
 		}
 		for(int i=0;i<satellites.getSatellites().size();i++) {
 			LinkedHashMap<Integer,String> mensajes=limpiarMensaje(satellites.getSatellites().get(i).getMessage());
 			listaMensajes.add(mensajes);
-			listaDistancias[i]=satellites.getSatellites().get(i).getDistance();
+			//listaDistancias[i]=satellites.getSatellites().get(i).getDistance();
 		}
 		ResultadoUbicacion mensaje = fusionarMensajes(listaMensajes);
-		ResultadoUbicacion distancia = calcularUbicacion(listaDistancias);
+		ResultadoUbicacion distancia = calcularUbicacion(satellites);
 		if(mensaje.isExitoso() && distancia.isExitoso()) {
 			resultado.setExitoso(true);
 			resultado.setPosicionX(distancia.getPosicionX());
@@ -52,19 +58,23 @@ public class LogicaQuasar {
 	/**
 	 * Metodo para calcular la ubicacion usando la distancia respecto a los otros satelites
 	 */
-	private ResultadoUbicacion calcularUbicacion(double[] listaDistancias) {
+	private ResultadoUbicacion calcularUbicacion(SatellitesIn satellites) {
 		ResultadoUbicacion resultado = new ResultadoUbicacion();
 		resultado.setExitoso(true);
 		try {
-			double[] kenobi = obtenerUbicacion("kenobi");
-			double[] skywalker = obtenerUbicacion("skywalker");
-			double[] sato = obtenerUbicacion("sato");
-			if(kenobi.length==0 && skywalker.length==0 && sato.length==0 ) {
+			double[] listaDistancias = new double[3];
+			double[] satellite1 = obtenerUbicacion(satellites.getSatellites().get(0).getName());
+			double[] satellite2 = obtenerUbicacion(satellites.getSatellites().get(1).getName());
+			double[] satellite3 = obtenerUbicacion(satellites.getSatellites().get(2).getName());
+			for(int i=0;i<satellites.getSatellites().size();i++) {
+				listaDistancias[i]=satellites.getSatellites().get(i).getDistance();
+			}
+			if(satellite1.length==0 && satellite2.length==0 && satellite3.length==0 ) {
 				System.out.println("no se pudo obtener las propiedades");
 				resultado.setExitoso(false);
 				return resultado;
 			}
-			double[][] posiciones = new double[][] { kenobi, skywalker, sato };
+			double[][] posiciones = new double[][] { satellite1, satellite2, satellite3 };
 	
 			NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(posiciones, listaDistancias), new LevenbergMarquardtOptimizer());
 			Optimum optimum = solver.solve();
@@ -74,11 +84,17 @@ public class LogicaQuasar {
 			resultado.setPosicionX(centroid[0]);
 			resultado.setPosicionY(centroid[1]);
 		}catch(Exception e) {
+			LOGGER.error("Ocurrio un error en calcularUbicacion ",e);
 			resultado.setExitoso(false);
 		}
 		return resultado;
 	}
 	
+	/**
+	 * Metodo para obtener la ubicacion
+	 * @param nombreSatellite
+	 * @return
+	 */
 	private double[] obtenerUbicacion(String nombreSatellite) {
 		RedisClient redis = new RedisClient();
 		String propiedad = redis.consultarPropiedad(nombreSatellite);
