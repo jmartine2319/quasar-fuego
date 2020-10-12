@@ -1,10 +1,8 @@
 package com.jdmm.quasar;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jdmm.quasar.dto.ResultadoSatellitesOut;
 import com.jdmm.quasar.dto.ResultadoUbicacion;
-import com.jdmm.quasar.dto.SatelliteIn;
 import com.jdmm.quasar.dto.SatellitesIn;
 import com.jdmm.quasar.dto.Ubicacion;
 import com.jdmm.quasar.logica.LogicaQuasar;
@@ -18,9 +16,6 @@ import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.BasicConfigurator;

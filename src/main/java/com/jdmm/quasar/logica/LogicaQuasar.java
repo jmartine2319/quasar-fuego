@@ -1,7 +1,6 @@
 package com.jdmm.quasar.logica;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,8 +26,6 @@ public class LogicaQuasar {
 		ResultadoUbicacion resultado = new ResultadoUbicacion();
 		resultado.setExitoso(false);
 		List<LinkedHashMap<Integer,String>> listaMensajes = new ArrayList<>();
-		//double[] listaDistancias = new double[3];
-		HashMap<String,Double> listaDistancias = new HashMap<String,Double>();
 		if(satellites.getSatellites().size()>3) {
 			return resultado;
 		}
