@@ -56,7 +56,7 @@ public class FunctionTest {
     	List<SatelliteIn> listaSatellite = new ArrayList<>();
     	listaSatellite.add(satellite);
     	listaSatellite.add(satellite2);
-    	listaSatellite.add(satellite3);
+    	//listaSatellite.add(satellite3);
     	satellites.setSatellites(listaSatellite);
     	ResultadoUbicacion resultado = logicaQuasar.iniciarProcesoUbicacion(satellites);
     	

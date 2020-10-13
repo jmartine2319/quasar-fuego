@@ -59,19 +59,24 @@ public class LogicaQuasar {
 		ResultadoUbicacion resultado = new ResultadoUbicacion();
 		resultado.setExitoso(true);
 		try {
-			double[] listaDistancias = new double[3];
-			double[] satellite1 = obtenerUbicacion(satellites.getSatellites().get(0).getName());
-			double[] satellite2 = obtenerUbicacion(satellites.getSatellites().get(1).getName());
-			double[] satellite3 = obtenerUbicacion(satellites.getSatellites().get(2).getName());
+			double[][] posiciones = new double[satellites.getSatellites().size()][];
+			for(int i=0;i<satellites.getSatellites().size();i++) {
+				
+				double[] satellite = obtenerUbicacion(satellites.getSatellites().get(i).getName());
+				
+				if(satellite==null || satellite.length==0) {
+					LOGGER.error("No se pudo obtener la ubicacion de los satellites ");
+					resultado.setExitoso(false);
+					return resultado;
+				}
+				posiciones[i] = satellite;
+				
+				
+			}
+			double[] listaDistancias = new double[satellites.getSatellites().size()];
 			for(int i=0;i<satellites.getSatellites().size();i++) {
 				listaDistancias[i]=satellites.getSatellites().get(i).getDistance();
 			}
-			if(satellite1.length==0 && satellite2.length==0 && satellite3.length==0 ) {
-				LOGGER.error("No se pudo obtener la ubicacion de los satellites ");
-				resultado.setExitoso(false);
-				return resultado;
-			}
-			double[][] posiciones = new double[][] { satellite1, satellite2, satellite3 };
 	
 			NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(posiciones, listaDistancias), new LevenbergMarquardtOptimizer());
 			Optimum optimum = solver.solve();
