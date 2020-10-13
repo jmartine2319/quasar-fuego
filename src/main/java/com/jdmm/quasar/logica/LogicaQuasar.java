@@ -67,7 +67,7 @@ public class LogicaQuasar {
 				listaDistancias[i]=satellites.getSatellites().get(i).getDistance();
 			}
 			if(satellite1.length==0 && satellite2.length==0 && satellite3.length==0 ) {
-				System.out.println("no se pudo obtener las propiedades");
+				LOGGER.error("No se pudo obtener la ubicacion de los satellites ");
 				resultado.setExitoso(false);
 				return resultado;
 			}

@@ -29,7 +29,7 @@ public class ControladorQuasar {
      * 1. curl -d "HTTP Body" {your host}/api/HttpExample
      * 2. curl "{your host}/api/HttpExample?name=HTTP%20Query" SatellitesIn
      */
-    @FunctionName("quasar")
+    @FunctionName("topsecret")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "topsecret",

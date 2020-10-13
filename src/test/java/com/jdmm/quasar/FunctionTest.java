@@ -1,5 +1,9 @@
 package com.jdmm.quasar;
 
+import com.jdmm.quasar.dto.ResultadoUbicacion;
+import com.jdmm.quasar.dto.SatelliteIn;
+import com.jdmm.quasar.dto.SatellitesIn;
+import com.jdmm.quasar.logica.LogicaQuasar;
 import com.microsoft.azure.functions.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -23,31 +27,41 @@ public class FunctionTest {
     @Test
     public void testHttpTriggerJava() throws Exception {
         // Setup
-        @SuppressWarnings("unchecked")
-        final HttpRequestMessage<Optional<String>> req = mock(HttpRequestMessage.class);
-
-        final Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("name", "Azure");
-        doReturn(queryParams).when(req).getQueryParameters();
-
-        final Optional<String> queryBody = Optional.empty();
-        doReturn(queryBody).when(req).getBody();
-
-        doAnswer(new Answer<HttpResponseMessage.Builder>() {
-            @Override
-            public HttpResponseMessage.Builder answer(InvocationOnMock invocation) {
-                HttpStatus status = (HttpStatus) invocation.getArguments()[0];
-                return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
-            }
-        }).when(req).createResponseBuilder(any(HttpStatus.class));
-
-        final ExecutionContext context = mock(ExecutionContext.class);
-        doReturn(Logger.getGlobal()).when(context).getLogger();
-
-        // Invoke
-        final HttpResponseMessage ret = new ControladorQuasar().run(req, context);
+    	LogicaQuasar logicaQuasar = new LogicaQuasar();
+    	SatellitesIn satellites = new SatellitesIn();
+    	SatelliteIn satellite = new SatelliteIn();
+    	satellite.setDistance(150.0);
+    	List<String> listaMensajes = new ArrayList<>();
+    	listaMensajes.add("hola");
+    	listaMensajes.add("");
+    	listaMensajes.add("julian");
+    	satellite.setName("skywalker");
+    	satellite.setMessage(listaMensajes);
+    	SatelliteIn satellite2 = new SatelliteIn();
+    	satellite2.setDistance(115.0);
+    	List<String> listaMensajes2 = new ArrayList<>();
+    	listaMensajes2.add("*");
+    	listaMensajes2.add("soy");
+    	listaMensajes2.add("julian");
+    	satellite2.setName("sato");
+    	satellite2.setMessage(listaMensajes2);
+    	SatelliteIn satellite3 = new SatelliteIn();
+    	satellite3.setDistance(115.0);
+    	List<String> listaMensajes3 = new ArrayList<>();
+    	listaMensajes3.add("");
+    	listaMensajes3.add("soy");
+    	listaMensajes3.add("julian");
+    	satellite3.setName("sato");
+    	satellite3.setMessage(listaMensajes3);
+    	List<SatelliteIn> listaSatellite = new ArrayList<>();
+    	listaSatellite.add(satellite);
+    	listaSatellite.add(satellite2);
+    	listaSatellite.add(satellite3);
+    	satellites.setSatellites(listaSatellite);
+    	ResultadoUbicacion resultado = logicaQuasar.iniciarProcesoUbicacion(satellites);
+    	
 
         // Verify
-        assertEquals(ret.getStatus(), HttpStatus.OK);
+        assertEquals(resultado.getMensaje(),"hola soy julian");
     }
 }
