@@ -11,7 +11,7 @@ public class RedisClient {
 		}
 		if(!jedis.isConnected()) {
 			jedis.connect();
-			jedis.auth("Z3+XAqKjqYG38mPSUHUH0+Go2nRLp3MOq7DreyIilrs=");
+			jedis.auth("n0tjGozsKWgeD9+3g9x1b7XOCLtf4OcVbt7fEPzsc78=");
 		}
 		return jedis.get(clave);
 	}
